@@ -5,6 +5,7 @@ import mimetypes, random
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 
+
 class Session(object):
     """Low-level session that mirrors the RESTful API.
     """

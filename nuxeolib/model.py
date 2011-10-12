@@ -9,7 +9,7 @@ class Client(object):
         self.session = None
 
     def getSession(self):
-        """"Returns a low-level session to the server.
+        """"Returns a low-level session to the server. You probably don't want to use it.
         """
         if not self.session:
             self.session = Session(self.root, self.login, self.password)
@@ -21,12 +21,11 @@ class Client(object):
         return self.getDocument("/")
 
     def getDocument(self, path):
-        """Get document for path.
+        """Returns document at the given path.
         """
         session = self.getSession()
         resp = session.fetch(path)
         return Document(session, resp)
-
 
 
 class Document(object):
@@ -41,17 +40,22 @@ class Document(object):
         self.title = dict['title']
         self.name = self.path.split("/")[-1]
         self.properties = dict.get('properties', {})
-        self.dirty = {}
+        self.dirty_properties = {}
 
     def __getitem__(self, key):
+        """Gets a property value using <schema>:<name> as a key.
+        """
         if self.properties.has_key(key):
             return self.properties[key]
         else:
             return getattr(self, key)
 
     def __setitem__(self, key, value):
+        """Sets a property value using <schema>:<name> as a key. Marks it dirty so it can be saved
+        by calling 'save()' (don't forget to do it).
+        """
         self.properties[key] = value
-        self.dirty[key] = value
+        self.dirty_properties[key] = value
 
     def refresh(self):
         """Refreshes own properties.
@@ -60,11 +64,14 @@ class Document(object):
         self._update(dict)
 
     def save(self):
-        dict = self.session.update(self.path, self.dirty)
-        self._update(dict)
+        """Updates dirty (modified) properties.
+        """
+        if self.dirty_properties:
+            dict = self.session.update(self.path, self.dirty_properties)
+            self._update(dict)
 
     def getBlob(self):
-        """Returns the blob for this document.
+        """Returns the blob (aka content stream) for this document.
         """
         if self.type == "Note":
             # Hack
@@ -73,7 +80,7 @@ class Document(object):
             return self.session.getBlob(self.path)
 
     def setBlob(self, blob):
-        """Sets the blob for this document.
+        """Sets the blob (aka content stream) for this document.
         """
         if self.type == "Note":
             # Hack
@@ -89,8 +96,12 @@ class Document(object):
         return [ Document(self.session, dict) for dict in dicts ]
 
     def create(self, name, type):
+        """Creates a new document (or folder) object as child of this document.
+        """
         child_doc = self.session.create(self.path, type, name)
         return Document(self.session, child_doc)
 
     def delete(self):
+        """Deletes this document (including children).
+        """
         self.session.delete(self.path)
