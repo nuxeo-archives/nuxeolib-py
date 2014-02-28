@@ -9,8 +9,12 @@ from email.mime.base import MIMEBase
 class Session(object):
     """Low-level session that mirrors the RESTful API.
     """
-    def __init__(self, root, login, passwd):
-        self.root = root
+    def __init__(self, server, login, passwd):
+
+	self.server = server
+        self.root = self.server + "/site/automation/"
+        self.api  = self.server + "/api/v1/user"
+
         self.login = login
         self.passwd = passwd
         self.auth = 'Basic %s' % base64.b64encode(
@@ -84,8 +88,58 @@ class Session(object):
     def attachBlob(self, ref, blob):
         return self._attach_blob(blob, document=ref)
 
+    # User category
+    def read_user(self, name):
+	return self._execute_api ("/" + name)
+
+    def create_user(self, user, firstName, lastName, email, password):
+	dp = {}
+	dp['username']  = user
+	dp['email']     = email
+	dp['lastName']  = lastName
+	dp['firstName'] = firstName
+	dp['password']  = password
+
+	d = {}
+	d['entity-type'] = 'user'
+	d['id']          = user
+	d['properties']  = dp
+
+	data = json.dumps(d, sort_keys=True)
+	data = data.strip ()
+
+	return self._execute_api ("", data)
+
 
     # Private
+
+    def _execute_api(self, param="", data=None):
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": self.auth,
+            "X-NXDocumentProperties": "*",
+        }
+
+        req = urllib2.Request(self.api + param, data=data, headers=headers)
+        try:
+            resp = self.opener.open(req)
+	    info = resp.info()
+	    s = resp.read()
+	    if info.has_key('content-type') and \
+		   info['content-type'].startswith("application/json"):
+		if s:
+		    return json.loads(s)
+		else:
+		    return None
+	    else:
+		return s
+
+        except Exception, e:
+            self._handle_error(e)
+            #raise
+
+
+
     def _execute(self, command, input=None, **params):
         self._checkParams(command, input, params)
         headers = {
@@ -109,7 +163,8 @@ class Session(object):
         if input:
             d['input'] = input
         if d:
-            data = json.dumps(d)
+	    # better keep dictionary sorted
+            data = json.dumps(d, sort_keys=True)
         else:
             data = None
 
@@ -140,7 +195,7 @@ class Session(object):
                 start="request")
 
         d = {'params': params}
-        json_data = json.dumps(d)
+        json_data = json.dumps(d, sort_keys=True)
         json_part = MIMEBase("application", "json+nxrequest")
         json_part.add_header("Content-ID", "request")
         json_part.set_payload(json_data)

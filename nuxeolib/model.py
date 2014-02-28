@@ -1,9 +1,17 @@
 from session import Session
 
+import netrc
 
 class Client(object):
-    def __init__(self, root, login, password):
-        self.root = root
+    def __init__(self, host):
+
+	self.host = host
+
+	self.server = "http://%s/nuxeo" % (self.host)
+
+	secrets = netrc.netrc()
+	login, username, password = secrets.authenticators (self.host.split(':')[0])
+
         self.login = login
         self.password = password
         self.session = None
@@ -12,7 +20,7 @@ class Client(object):
         """"Returns a low-level session to the server. You probably don't want to use it.
         """
         if not self.session:
-            self.session = Session(self.root, self.login, self.password)
+            self.session = Session(self.server, self.login, self.password)
         return self.session
 
     def getRoot(self):

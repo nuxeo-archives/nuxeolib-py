@@ -8,7 +8,8 @@ from nuxeolib import Client
 class SimpleTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.client = Client(URL, LOGIN, PASSWD)
+        #self.client = Client(URL, LOGIN, PASSWD)
+        self.client = Client(HOST)
         self.session = self.client.getSession()
         self.doc_name = "doc%s" % random.randint(0, 1000000000)
 
