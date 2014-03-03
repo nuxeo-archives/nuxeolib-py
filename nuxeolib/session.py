@@ -140,7 +140,12 @@ class Session(object):
 	    else:
 		return s
 
-        except Exception, e:
+        except urllib2.HTTPError as e:
+            if e.code == 404:
+                self._handle_error(e, debug=True)
+            else:
+                self._handle_error(e)
+        except Exception as e:
             self._handle_error(e)
             #raise
 
@@ -263,14 +268,24 @@ class Session(object):
                 raise Exception("Missing param: %s" % param)
         # TODO: add typechecking
 
-    def _handle_error(self, e):
-        log.error(e)
+    def _handle_error(self, e, debug=False):
+        if debug:
+            log.debug(e)
+        else:
+            log.error(e)
         if hasattr(e, "fp"):
             detail = e.fp.read()
             try:
                 exc = json.loads(detail)
-                log.error(exc['message'])
-                log.error(exc['stack'])
+                if debug:
+                    log.debug(exc['message'])
+                    log.debug(exc['stack'])
+                else:
+                    log.error(exc['message'])
+                    log.error(exc['stack'])
             except:
                 # Error message should always be a JSON message, but sometimes it's not
-                log.error(detail)
+                if debug:
+                    log.debug(detail)
+                else:
+                    log.error(detail)
