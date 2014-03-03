@@ -24,8 +24,19 @@ New features
 
 Modifications
 -------------
-* Creation syntax for the Client:
-Client (host = "localhost:8080")
-* Username/password obtained from .netrc file
+* Creation syntax for the Client: allow use of .netrc file or explicit credentials. Only required arguments are scheme and host.
+
+    - Use default .netrc file location ($HOME):
+
+      Client(scheme='http', host='localhost', port='8080', context='nuxeo')
+
+    - Use explicit .netrc file location:
+
+      Client(scheme='http', host='localhost', port='8080', context='nuxeo', netrc_file='/path/to/netrc/file')
+
+    - Use explicit credentials:
+
+      Client(scheme='http', host='localhost', port='8080', context='nuxeo', login='Administrator', password='Administrator')
+
 * json.dumps uses sorted dictionary of parameters.
 
