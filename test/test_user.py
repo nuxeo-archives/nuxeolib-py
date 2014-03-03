@@ -1,24 +1,30 @@
 #!/usr/bin/env python
 
-import random
 import unittest
-import sys
 from config import *
 from nuxeolib import Client
 
 
-if __name__ == '__main__':
+class SimpleTestCase(unittest.TestCase):
 
-    user = sys.argv[1]
+    def setUp(self):
+        self.client = Client(SCHEME, HOST, port=PORT, context=CONTEXT,
+                             netrc_file=NETRC_FILE)
+        self.session = self.client.getSession()
+        self.username = 'test_user'
 
-    host = "localhost:8081"
+    def testCreateUser(self):
 
-    client = Client(host)
-    session = client.getSession()
-    
-    userinfo = session.read_user (user)
-    if not userinfo:
-	session.create_user (user, "a", user, "%s@a.b" % user, user)
-	userinfo = session.read_user (user)
+        userinfo = self.session.read_user(self.username)
+        if not userinfo:
+            self.session.create_user(self.username, "John", "Doe",
+                                     "john.doe@company.com", 'secret')
+        userinfo = self.session.read_user(self.username)['properties']
 
-    print userinfo
+        self.assertEquals(userinfo['username'], 'test_user')
+        self.assertEquals(userinfo['firstName'], 'John')
+        self.assertEquals(userinfo['lastName'], 'Doe')
+        self.assertEquals(userinfo['email'], 'john.doe@company.com')
+
+    def tearDown(self):
+        self.session.delete_user(self.username)
