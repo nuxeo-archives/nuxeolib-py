@@ -11,9 +11,9 @@ class Session(object):
     """
     def __init__(self, server, login, passwd):
 
-	self.server = server
+        self.server = server
         self.root = self.server + "/site/automation/"
-        self.api  = self.server + "/api/v1/user"
+        self.api = self.server + "/api/v1/user"
 
         self.login = login
         self.passwd = passwd

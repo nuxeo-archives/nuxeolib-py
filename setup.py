@@ -24,6 +24,7 @@ CLASSIFIERS = [
     'Topic :: Software Development :: Libraries :: Python Modules',
 ]
 
+
 def main():
     setuptools.setup(
         name = "nuxeo-automation",

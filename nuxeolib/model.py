@@ -2,6 +2,7 @@ from session import Session
 
 import netrc
 
+
 class Client(object):
 
     def __init__(self, scheme, host, port=None, context=None, login=None,

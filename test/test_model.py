@@ -1,8 +1,8 @@
 from nuxeolib import Client
-import unittest, time
+import unittest
+import time
 from config import *
 
-from pprint import pprint
 
 class ClientTest(unittest.TestCase):
 
@@ -16,7 +16,6 @@ class ClientTest(unittest.TestCase):
 
     def tearDown(self):
         self.testFolder.delete()
-
 
     def testCreateFolder(self):
         name = 'toto-%s' % time.time()
@@ -66,7 +65,7 @@ class ClientTest(unittest.TestCase):
         folder = self.testFolder.create(name, "Folder")
 
         name = 'toto-%s' % time.time()
-        folder1 = folder.create(name, "Folder")
+        folder.create(name, "Folder")
 
         folder.delete()
 

@@ -5,6 +5,7 @@ import unittest
 from config import *
 from nuxeolib import Client
 
+
 class SimpleTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -22,16 +23,17 @@ class SimpleTestCase(unittest.TestCase):
     def testCreateWorkspace(self):
         self._testCreate("Workspace")
 
-    def _testCreate(self, type):
-        self.session.create("/", type, self.doc_name)
+    def _testCreate(self, doc_type):
+        self.session.create("/", doc_type, self.doc_name)
 
         doc = self.session.fetch("/" + self.doc_name)
-        self.assertEquals(type, doc['type'])
+        self.assertEquals(doc_type, doc['type'])
         self.assertEquals(self.doc_name, doc['title'])
-        self.assertEquals("/"+self.doc_name, doc['path'])
+        self.assertEquals("/" + self.doc_name, doc['path'])
 
         result = self.session.getChildren("/")
-        docs = [ doc for doc in result['entries'] if doc['title'] == self.doc_name ]
+        docs = [doc for doc in result['entries']
+                if doc['title'] == self.doc_name]
         self.assertEquals(1, len(docs))
 
         doc = self.session.getParent("/" + self.doc_name)
@@ -44,6 +46,7 @@ class SimpleTestCase(unittest.TestCase):
         uuid = doc['uid']
         doc = self.session.fetch(uuid)
         self.session.delete("/" + self.doc_name)
+
 
 class SingleFileTestCase(unittest.TestCase):
 
@@ -82,7 +85,8 @@ class SingleFileTestCase(unittest.TestCase):
     def testSimpleQuery(self):
         query = "SELECT * FROM File"
         result = self.session.query(query)
-        docs = [ doc for doc in result['entries'] if doc['title'] == self.doc_name ]
+        docs = [doc for doc in result['entries']
+                if doc['title'] == self.doc_name]
         self.assertEquals(1, len(docs))
 
     def testLock(self):
@@ -117,17 +121,20 @@ class MultipleFoldersTestCase(unittest.TestCase):
             pass
 
     def testMove(self):
-        self.session.move("/" + self.folder1 + "/" + self.file, "/" + self.folder2)
+        self.session.move("/" + self.folder1 + "/" + self.file, "/"
+                          + self.folder2)
         doc = self.session.fetch("/" + self.folder2 + "/" + self.file)
         self.assertEquals(self.file, doc['title'])
 
         # Original has disappeared from source folder
         result = self.session.getChildren("/" + self.folder1)
-        docs = [ doc for doc in result['entries'] if doc['title'] == self.file ]
+        docs = [doc for doc in result['entries']
+                if doc['title'] == self.file]
         self.assertEquals(0, len(docs))
 
     def testCopy(self):
-        self.session.copy("/" + self.folder1 + "/" + self.file, "/" + self.folder2)
+        self.session.copy("/" + self.folder1 + "/" + self.file, "/"
+                          + self.folder2)
         doc = self.session.fetch("/" + self.folder2 + "/" + self.file)
         self.assertEquals(self.file, doc['title'])
 
@@ -138,4 +145,3 @@ class MultipleFoldersTestCase(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
