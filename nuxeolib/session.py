@@ -94,20 +94,20 @@ class Session(object):
         return self._execute_api(param="/" + name)
 
     def create_user(self, user, firstName, lastName, email, password):
-	dp = {}
-	dp['username']  = user
-	dp['email']     = email
-	dp['lastName']  = lastName
-	dp['firstName'] = firstName
-	dp['password']  = password
+        dp = {}
+        dp['username'] = user
+        dp['email'] = email
+        dp['lastName'] = lastName
+        dp['firstName'] = firstName
+        dp['password'] = password
 
-	d = {}
-	d['entity-type'] = 'user'
-	d['id']          = user
-	d['properties']  = dp
+        d = {}
+        d['entity-type'] = 'user'
+        d['id'] = user
+        d['properties'] = dp
 
-	data = json.dumps(d, sort_keys=True)
-	data = data.strip ()
+        data = json.dumps(d, sort_keys=True)
+        data = data.strip()
 
         return self._execute_api(data=data)
 
