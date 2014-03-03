@@ -1,4 +1,5 @@
 import urllib2, base64, time, os
+import httplib
 import logging as log
 import json
 import mimetypes, random
@@ -90,7 +91,7 @@ class Session(object):
 
     # User category
     def read_user(self, name):
-	return self._execute_api ("/" + name)
+        return self._execute_api(param="/" + name)
 
     def create_user(self, user, firstName, lastName, email, password):
 	dp = {}
@@ -108,12 +109,14 @@ class Session(object):
 	data = json.dumps(d, sort_keys=True)
 	data = data.strip ()
 
-	return self._execute_api ("", data)
+        return self._execute_api(data=data)
 
+    def delete_user(self, user):
+        return self._execute_api(method='DELETE', param="/" + user)
 
     # Private
 
-    def _execute_api(self, param="", data=None):
+    def _execute_api(self, method=None, param="", data=None):
         headers = {
             "Content-Type": "application/json",
             "Authorization": self.auth,
@@ -121,6 +124,9 @@ class Session(object):
         }
 
         req = urllib2.Request(self.api + param, data=data, headers=headers)
+        # Default method is POST
+        if method is not None:
+            req.get_method = lambda: method
         try:
             resp = self.opener.open(req)
 	    info = resp.info()
