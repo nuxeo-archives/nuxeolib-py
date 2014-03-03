@@ -2,12 +2,16 @@
 
 from nuxeolib import Client
 
-URL = "http://localhost:8080/nuxeo/site/automation/"
-LOGIN = 'Administrator'
-PASSWD = 'Administrator'
+SCHEME = 'http'
+HOST = "localhost"
+PORT = '8080'
+CONTEXT = 'nuxeo'
+NETRC_FILE = 'test/resources/.netrc'
+
 
 def main():
-    client = Client(URL, LOGIN, PASSWD)
+    client = Client(SCHEME, HOST, port=PORT, context=CONTEXT,
+                    netrc_file=NETRC_FILE)
     children = client.getRoot().getChildren()
     print children
     for doc in children:

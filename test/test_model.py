@@ -7,7 +7,8 @@ from pprint import pprint
 class ClientTest(unittest.TestCase):
 
     def setUp(self):
-        self.client = Client(URL, LOGIN, PASSWD)
+        self.client = Client(SCHEME, HOST, port=PORT, context=CONTEXT,
+                             netrc_file=NETRC_FILE)
         self.root = self.client.getRoot()
 
         testFolderName = "testfolder-%s" % time.time()

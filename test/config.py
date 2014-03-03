@@ -1,6 +1,7 @@
 # Global parameters for all tests
 
-#URL = "http://localhost:8080/nuxeo/site/automation/"
-HOST = "localhost:8080"
-LOGIN = 'Administrator'
-PASSWD = 'Administrator'
+SCHEME = 'http'
+HOST = "localhost"
+PORT = '8080'
+CONTEXT = 'nuxeo'
+NETRC_FILE = 'test/resources/.netrc'

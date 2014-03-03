@@ -8,8 +8,8 @@ from nuxeolib import Client
 class SimpleTestCase(unittest.TestCase):
 
     def setUp(self):
-        #self.client = Client(URL, LOGIN, PASSWD)
-        self.client = Client(HOST)
+        self.client = Client(SCHEME, HOST, port=PORT, context=CONTEXT,
+                             netrc_file=NETRC_FILE)
         self.session = self.client.getSession()
         self.doc_name = "doc%s" % random.randint(0, 1000000000)
 
@@ -48,7 +48,8 @@ class SimpleTestCase(unittest.TestCase):
 class SingleFileTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.client = Client(URL, LOGIN, PASSWD)
+        self.client = Client(SCHEME, HOST, port=PORT, context=CONTEXT,
+                             netrc_file=NETRC_FILE)
         self.session = self.client.getSession()
         self.doc_name = "doc%s" % random.randint(0, 1000000000)
         self.session.create("/", "File", self.doc_name)
@@ -92,7 +93,8 @@ class SingleFileTestCase(unittest.TestCase):
 class MultipleFoldersTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.client = Client(URL, LOGIN, PASSWD)
+        self.client = Client(SCHEME, HOST, port=PORT, context=CONTEXT,
+                             netrc_file=NETRC_FILE)
         self.session = self.client.getSession()
 
         self.folder1 = "folder%s" % random.randint(0, 1000000000)
